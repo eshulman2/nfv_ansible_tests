@@ -1,0 +1,19 @@
+- name: Provision test workload
+  ansible.builtin.include_role:
+    name: provisioner/open_tofu
+  vars:
+    cifmw_tofu_plan_state: present
+    cifmw_tofu_project_path: "../roles/{{ item }}/tofu_files/"
+    # cifmw_tofu_use_remote_project: true
+
+- name: Run test
+  ansible.builtin.include_role:
+    name: "tests/{{ item }}"
+
+- name: Delete test workload
+  ansible.builtin.include_role:
+    name: provisioner/open_tofu
+  vars:
+    cifmw_tofu_plan_state: absent
+    cifmw_tofu_project_path: "../roles/{{ item }}/tofu_files/"
+    # cifmw_tofu_use_remote_project: true

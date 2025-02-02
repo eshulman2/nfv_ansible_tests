@@ -1,0 +1,5 @@
+- hosts: "{{ testing_target | default('localhost') }}"
+  tasks:
+  - name: "Run test {{ item }}"
+    ansible.builtin.include_tasks: testing_tasks.yaml
+    loop: "{{ tests }}"

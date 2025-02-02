@@ -1,0 +1,7 @@
+- name: Get ovs vsctl
+  ansible.builtin.command: ovs-vsctl show
+  delegate_to: compute-0
+  register: ovs-vsctl
+
+- debug:
+    var: ovs-vsctl
