@@ -1,0 +1,16 @@
+- name: Get ovs vsctl
+  ansible.builtin.command: ovs-vsctl get Open_vSwitch . other_config:userspace-tso-enable
+  delegate_to: compute-0
+  register: tso_enabled
+  become: true
+
+- name: Fail if tso is not enabled
+  when: tso_enabled.rc != 0 or tso_enabled.stdout == '\"false\"'
+  block:
+  - name: Set failure reason
+    ansible.builtin.set_fact:
+      test_failure_reason: "TSO is not enabled in ovs config"
+
+  - name: Fail on failure
+    ansible.builtin.fail:
+

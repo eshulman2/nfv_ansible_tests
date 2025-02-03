@@ -18,7 +18,7 @@
 
 - name: Prepare Remote Environment If Required
   ansible.builtin.include_role:
-    name: tofu
+    name: provisioner/open_tofu
     tasks_from: remote_prepare
   when:
     - ansible_host != 'localhost'
@@ -27,12 +27,12 @@
   block:
     - name: Prepare Tofu Environment
       ansible.builtin.import_role:
-        name: tofu
+        name: provisioner/open_tofu
         tasks_from: prepare
 
     - name: Execute Tofu Plan
       ansible.builtin.import_role:
-        name: tofu
+        name: provisioner/open_tofu
         tasks_from: plan
   rescue:
     - name: Notify Error In Execution  Tofu  Plan

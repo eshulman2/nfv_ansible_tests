@@ -1,19 +1,62 @@
-- name: Provision test workload
-  ansible.builtin.include_role:
-    name: provisioner/open_tofu
-  vars:
-    cifmw_tofu_plan_state: present
-    cifmw_tofu_project_path: "../roles/{{ item }}/tofu_files/"
-    # cifmw_tofu_use_remote_project: true
+- block:
+    - name: Reset failure reason
+      ansible.builtin.set_fact:
+        test_failure_reason: "Not set yet"
 
-- name: Run test
-  ansible.builtin.include_role:
-    name: "tests/{{ item }}"
+    - name: Check for test tofu files
+      ansible.builtin.stat:
+        path: ../roles/tests/{{ item }}/tofu_files/
+      register: check_tofu_files
 
-- name: Delete test workload
-  ansible.builtin.include_role:
-    name: provisioner/open_tofu
-  vars:
-    cifmw_tofu_plan_state: absent
-    cifmw_tofu_project_path: "../roles/{{ item }}/tofu_files/"
-    # cifmw_tofu_use_remote_project: true
+    - when: check_tofu_files.stat.exists
+      block:
+      - name: Copy tf vars file
+        ansible.builtin.copy:
+          src: /home/ansible/vars.tf
+          dest: ../roles/tests/{{ item }}/tofu_files/vars.tf
+          mode: '0644'
+
+      - name: Provision test workload
+        ansible.builtin.include_role:
+          name: provisioner/open_tofu
+        vars:
+          cifmw_tofu_plan_state: present
+          cifmw_tofu_project_path: "../roles/tests/{{ item }}/tofu_files/"
+          cifmw_tofu_use_remote_project: true
+          cifmw_tofu_hosts_pattern: 'undercloud-0'
+
+    - name: Run test
+      ansible.builtin.include_role:
+        name: "tests/{{ item }}"
+
+    - name: Add test to passing list
+      ansible.builtin.set_fact:
+        results: "{{ results | combine({item: {'status':'passed'}}) }}"
+
+  rescue:
+    - name: Pause for 5 minutes to build app cache
+      ansible.builtin.pause:
+        minutes: 5
+
+    - set_fact:
+        results: "{{ results | combine(failed_role) }}"
+      vars:
+        failed_role: |
+          {% filter from_yaml %}
+          {{ item }}:
+            status: failed
+            ansible_failed_task: {{ ansible_failed_task.action }}
+            ansible_failed_result: {{ ansible_failed_result.msg }}
+            failure_reason: {{ test_failure_reason }}
+          {% endfilter %}
+
+  always:
+    - name: Delete test workload
+      ansible.builtin.include_role:
+        name: provisioner/open_tofu
+      vars:
+        cifmw_tofu_plan_state: absent
+        cifmw_tofu_project_path: "../roles/tests/{{ item }}/tofu_files/"
+        cifmw_tofu_use_remote_project: true
+        cifmw_tofu_hosts_pattern: 'undercloud-0'
+      when: check_tofu_files.stat.exists

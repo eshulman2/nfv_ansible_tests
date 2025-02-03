@@ -1,5 +1,16 @@
 - hosts: "{{ testing_target | default('localhost') }}"
+  vars:
+    results: {}
   tasks:
   - name: "Run test {{ item }}"
     ansible.builtin.include_tasks: testing_tasks.yaml
     loop: "{{ tests }}"
+
+  - name: Write results to file
+    ansible.builtin.copy:
+      dest: /var/lib/AnsibleTests/external_files/results.yaml
+      content: "{{ results | to_nice_yaml }}"
+
+  - name: Print results
+    ansible.builtin.debug:
+      msg: "{{ results | to_nice_yaml }}"
