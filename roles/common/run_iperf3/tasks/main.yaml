@@ -1,0 +1,30 @@
+---
+- name: Clients result dict
+  ansible.builtin.set_fact:
+    "{{ iperf_result_dict_name | default(test_name + '_iperf_results') }}": {}
+
+- name: Prepare ipref instances
+  ansible.builtin.include_tasks: prepare_iperf.yaml
+  loop: "{{ groups[test_name] }}"
+  loop_control:
+    loop_var: iperf_instances
+
+- name: Run iperf3 server
+  ansible.builtin.command: iperf3 --server --daemon
+  delegate_to: "{{ iperf3_srever }}"
+
+- name: Run iperf3 client
+  ansible.builtin.include_tasks: clients.yaml
+  loop: "{{ groups[iperf3_clients_group] }}"
+  loop_control:
+    loop_var: iperf_client
+
+- name: Wait for iperf run to finish
+  ansible.builtin.wait_for:
+    timeout: 70
+
+- name: Read and parse iperf results
+  ansible.builtin.include_tasks: read_and_parse_results.yaml
+  loop: "{{ groups[iperf3_clients_group] }}"
+  loop_control:
+    loop_var: iperf_client

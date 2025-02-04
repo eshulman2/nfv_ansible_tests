@@ -1,0 +1,10 @@
+
+
+- name: Include abstract role
+  ansible.builtin.include_role:
+    name: test_skel/tso_abstract
+    public: true
+  vars:
+    iperf3_srever: server_0
+    iperf3_clients_group: "test_tso_iperf3_client"
+    iperf3_server_ip: "{{ hostvars[iperf3_srever]['ansible_eth0']['ipv4']['address'] }}"

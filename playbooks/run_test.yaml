@@ -2,8 +2,12 @@
   vars:
     results: {}
   tasks:
-  - name: "Run test {{ item }}"
-    ansible.builtin.include_tasks: testing_tasks.yaml
+  - name: "Run test {{ test_name }}"
+    ansible.builtin.include_role:
+      name: test_runner
+      public: true
+    vars:
+      test_name: "{{ item }}"
     loop: "{{ tests }}"
 
   - name: Write results to file

@@ -1,0 +1,17 @@
+---
+- delegate_to: "{{ iperf_client }}"
+  block:
+  - name: Collect clients output
+    ansible.builtin.slurp:
+      src: /tmp/iperf3.log
+    register: iperf_output
+
+  - name: Parse iperf output
+    ansible.builtin.debug:
+      msg: "{{ iperf_output }}"
+
+  - name: Add results to results dict
+    vars:
+      dict_name: "{{ iperf_result_dict_name | default(test_name + '_iperf_results') }}"
+    ansible.builtin.set_fact:
+      "{{ dict_name }}": "{{ lookup('ansible.builtin.vars', dict_name) | combine({item: iperf_output}) }}"
