@@ -1,0 +1,9 @@
+---
+- name: Collect clients output
+  ansible.builtin.slurp:
+    src: /tmp/iperf3.log
+  register: iperf_output
+
+- name: Parse iperf output
+  ansible.builtin.debug:
+    msg: "{{ iperf_output }}"

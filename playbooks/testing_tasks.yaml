@@ -2,10 +2,11 @@
     - name: Reset failure reason
       ansible.builtin.set_fact:
         test_failure_reason: "Not set yet"
+        tofu_dir: "../roles/tests/{{ item }}/tofu_files/"
 
     - name: Check for test tofu files
       ansible.builtin.stat:
-        path: ../roles/tests/{{ item }}/tofu_files/
+        path: "{{ tofu_dir }}"
       register: check_tofu_files
 
     - when: check_tofu_files.stat.exists
@@ -13,7 +14,7 @@
       - name: Copy tf vars file
         ansible.builtin.copy:
           src: /home/ansible/vars.tf
-          dest: ../roles/tests/{{ item }}/tofu_files/vars.tf
+          dest: "{{ tofu_dir }}vars.tf"
           mode: '0644'
 
       - name: Provision test workload
@@ -21,17 +22,19 @@
           name: provisioner/open_tofu
         vars:
           cifmw_tofu_plan_state: present
-          cifmw_tofu_project_path: "../roles/tests/{{ item }}/tofu_files/"
+          cifmw_tofu_project_path: "{{ tofu_dir }}"
           cifmw_tofu_use_remote_project: true
           cifmw_tofu_hosts_pattern: 'undercloud-0'
           cifmw_tofu_plan_variables:
-            files_output_path: "../roles/tests/{{ item }}/tofu_files/"
+            files_output_path: "{{ tofu_dir }}"
+
+      - name: Run test
+        ansible.builtin.include_role:
+          name: common/dynamic_inventory
 
     - name: Run test
       ansible.builtin.include_role:
         name: "tests/{{ item }}"
-      vars:
-        test_name: item
 
     - name: Add test to passing list
       ansible.builtin.set_fact:
@@ -56,9 +59,9 @@
         name: provisioner/open_tofu
       vars:
         cifmw_tofu_plan_state: absent
-        cifmw_tofu_project_path: "../roles/tests/{{ item }}/tofu_files/"
+        cifmw_tofu_project_path: "{{ tofu_dir }}"
         cifmw_tofu_use_remote_project: true
         cifmw_tofu_hosts_pattern: 'undercloud-0'
         cifmw_tofu_plan_variables:
-          files_output_path: "../roles/tests/{{ item }}/tofu_files/"
+          files_output_path: "{{ tofu_dir }}"
       when: check_tofu_files.stat.exists

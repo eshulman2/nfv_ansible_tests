@@ -5,6 +5,8 @@
   - name: "Run test {{ item }}"
     ansible.builtin.include_tasks: testing_tasks.yaml
     loop: "{{ tests }}"
+    vars:
+      test_name: "{{ item }}"
 
   - name: Write results to file
     ansible.builtin.copy:

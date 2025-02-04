@@ -1,0 +1,6 @@
+- name: Run iperf on target vms
+  ansible.builtin.include_role:
+    name: common/run_iperf3
+  vars:
+    iperf3_srever: server_0
+    iperf3_clients_group: "test_tso_iperf3_client"
