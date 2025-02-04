@@ -1,7 +1,4 @@
 
-- name: Pause for 5 minutes to build app cache
-  ansible.builtin.pause:
-    minutes: 5
 
 - name: no tests here yet
   fail:

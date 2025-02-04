@@ -34,10 +34,6 @@
         results: "{{ results | combine({item: {'status':'passed'}}) }}"
 
   rescue:
-    - name: Pause for 5 minutes to build app cache
-      ansible.builtin.pause:
-        minutes: 5
-
     - set_fact:
         results: "{{ results | combine(failed_role) }}"
       vars:
