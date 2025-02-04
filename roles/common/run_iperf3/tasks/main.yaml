@@ -1,0 +1,14 @@
+
+- delegate_to: "{{ test_name }}"
+  block:
+  - name: Install epel repo
+    ansible.builtin.dnf:
+      state: present
+      name:
+        - epel-release
+
+  - name: Install iperf3
+    ansible.builtin.dnf:
+      state: present
+      name: iperf3
+

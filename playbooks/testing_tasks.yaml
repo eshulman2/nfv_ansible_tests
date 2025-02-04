@@ -24,10 +24,14 @@
           cifmw_tofu_project_path: "../roles/tests/{{ item }}/tofu_files/"
           cifmw_tofu_use_remote_project: true
           cifmw_tofu_hosts_pattern: 'undercloud-0'
+          cifmw_tofu_plan_variables:
+            files_output_path: "../roles/tests/{{ item }}/tofu_files/"
 
     - name: Run test
       ansible.builtin.include_role:
         name: "tests/{{ item }}"
+      vars:
+        test_name: item
 
     - name: Add test to passing list
       ansible.builtin.set_fact:
@@ -55,4 +59,6 @@
         cifmw_tofu_project_path: "../roles/tests/{{ item }}/tofu_files/"
         cifmw_tofu_use_remote_project: true
         cifmw_tofu_hosts_pattern: 'undercloud-0'
+        cifmw_tofu_plan_variables:
+          files_output_path: "../roles/tests/{{ item }}/tofu_files/"
       when: check_tofu_files.stat.exists

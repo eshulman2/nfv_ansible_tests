@@ -1,0 +1,17 @@
+- name: Include dynamic instances vars
+  ansible.builtin.include_vars:
+    file: "tofu_files/servers.yaml"
+    name: dynamic_testing_instances
+
+- debug:
+    msg: "{{ dynamic_testing_instances }}"
+
+- name: Add hosts to dynamic inventory
+  ansible.builtin.add_host:
+    name: "{{ item.name }}"
+    group: "{{ test_name }}"
+    ansible_ssh_private_key_file: "{{ dynamic_testing_instances.ssh_key }}"
+    ansible_ssh_host: "{{ item.fip }}"
+    ansible_user: "{{ item.user }}"
+    testing_vars: "{{ item.vars }}"
+  loop: "{{ dynamic_testing_instances.dynamic_instances }}"

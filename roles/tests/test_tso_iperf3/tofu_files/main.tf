@@ -79,31 +79,38 @@ resource "openstack_networking_floatingip_v2" "fips" {
   depends_on = [openstack_compute_instance_v2.dpdk_servers]
 }
 
+variable files_output_path {
+  description = "files_output_path"
+}
+
 locals {
    template = <<-EOT
 ---
-ssh_key: test_keypair.key
+ssh_key: ${var.files_output_path}/generated_test_keypair.key
 dynamic_instances:
   - name: server-0
-    fip: ${openstack_networking_floatingip_v2.fips[0].address}
-    dpdk_net: ${openstack_networking_port_v2.dpdk_ports.0.mac_address}
     user: cloud-user
-  - name: server-0
     fip: ${openstack_networking_floatingip_v2.fips[0].address}
-    dpdk_net: ${openstack_networking_port_v2.dpdk_ports.0.mac_address}
+    vars:
+      dpdk_net: ${openstack_networking_port_v2.dpdk_ports[0].mac_address}
+  - name: server-1
     user: cloud-user
+    fip: ${openstack_networking_floatingip_v2.fips[1].address}
+    vars:
+      dpdk_net: ${openstack_networking_port_v2.dpdk_ports[1].mac_address}
 EOT
   private_key = openstack_compute_keypair_v2.test_keypair.private_key
 }
 
+
 resource "local_file" "key_file" {
-  filename        = "/var/lib/ansible/generated_test_keypair.key"
+  filename        = "${var.files_output_path}/generated_test_keypair.key"
   content         = local.private_key
   file_permission = "0600"
 }
 
 resource "local_file" "servers_file" {
-  filename        = "/var/lib/ansible/servers.yaml"
+  filename        = "${var.files_output_path}/servers.yaml"
   content         = local.template
   file_permission = "0644"
 }

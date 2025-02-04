@@ -1,4 +1,10 @@
+- name: Add dynamic instances to repo
+  ansible.builtin.include_role:
+    name: common/dynamic_inventory
+  # vars:
+  #   test_name: "{{ test_name }}"
 
-
-- name: no tests here yet
-  fail:
+- name: Install iperf on target vms
+  ansible.builtin.include_role:
+    name: common/run_iperf3
+  # delegate_to: "{{ test_name }}"
