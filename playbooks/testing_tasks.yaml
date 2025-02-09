@@ -2,6 +2,7 @@
     - name: Reset failure reason
       ansible.builtin.set_fact:
         test_failure_reason: "Not set yet"
+        test_additional_info: "none"
         tofu_dir: "../roles/tests/{{ test_name }}/tofu_files/"
 
     - name: Check for test tofu files
@@ -28,7 +29,7 @@
           # cifmw_tofu_plan_variables:
           #   files_output_path: "{{ tofu_dir }}"
 
-      - name: Run test
+      - name: Dynamic inventory
         ansible.builtin.include_role:
           name: common/dynamic_inventory
 
@@ -38,7 +39,7 @@
 
     - name: Add test to passing list
       ansible.builtin.set_fact:
-        results: "{{ results | combine({test_name: {'status':'passed'}}) }}"
+        results: "{{ results | combine({test_name: {'status':'passed', 'additional_info': test_additional_info}}) }}"
 
   rescue:
     - set_fact:
@@ -54,6 +55,10 @@
           {% endfilter %}
 
   always:
+    - name: delete me
+      ansible.builtin.pause:
+        minutes: 1
+
     - name: Delete test workload
       ansible.builtin.include_role:
         name: provisioner/open_tofu

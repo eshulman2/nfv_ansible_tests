@@ -1,6 +1,41 @@
-- name: Run iperf on target vms
+- name: Run iperf with tso on
   ansible.builtin.include_role:
     name: common/run_iperf3
   vars:
     iperf3_srever: server_0
     iperf3_clients_group: "test_tso_iperf3_client"
+    iperf_result_dict_name: 'tso_same_hosts_results'
+    server_nic: 'ansible_eth1'
+
+- name: Disable tso on guest
+  ansible.builtin.command: ethtool -K eth1 sg off tso off
+  delegate_to: "{{ iperf_instances }}"
+  become: true
+  loop: "{{ groups[test_name] }}"
+  loop_control:
+    loop_var: iperf_instances
+
+
+- name: Run iperf with tso on
+  ansible.builtin.include_role:
+    name: common/run_iperf3
+  vars:
+    iperf3_srever: server_0
+    iperf3_clients_group: "test_tso_iperf3_client"
+    iperf_result_dict_name: 'no_tso_same_hosts_results'
+    server_nic: 'ansible_eth1'
+
+- name: Set test additional info
+  ansible.builtin.set_fact:
+    test_additional_info: "Throughput with tso: {{ tso_same_hosts_results['server_1'].end.sum_received.bits_per_second | human_readable }}\n without tso: {{ no_tso_same_hosts_results['server_1'].end.sum_received.bits_per_second | human_readable }}"
+
+
+- name: Fail if results doesn't match expectations
+  when: tso_same_hosts_results['server_1'].end.sum_received.bits_per_second > no_tso_same_hosts_results['server_1'].end.sum_received.bits_per_second
+  block:
+  - name: Set failure reason
+    ansible.builtin.set_fact:
+      test_failure_reason: "iperf results with tso are lower than results without"
+
+  - name: Fail on failure
+    ansible.builtin.fail:

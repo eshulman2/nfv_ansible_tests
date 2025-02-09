@@ -13,10 +13,19 @@
     ansible_ssh_private_key_file: "{{ dynamic_testing_instances.ssh_key }}"
     ansible_ssh_host: "{{ dynamic_instance.fip }}"
     ansible_user: "{{ dynamic_instance.user }}"
-    # testing_vars: "{{ item.vars }}"
+    testing_vars: "{{ dynamic_instance.vars | from_yaml }}"
   loop: "{{ dynamic_testing_instances.dynamic_instances }}"
   loop_control:
     loop_var: dynamic_instance
+
+- name: Wait 300 seconds, but only start checking after 60 seconds
+  ansible.builtin.wait_for_connection:
+    delay: 30
+    timeout: 300
+  delegate_to: "{{ setup_instances }}"
+  loop: "{{ groups[test_name] }}"
+  loop_control:
+    loop_var: setup_instances
 
 - name: Collect facts about the new hosts
   ansible.builtin.setup:

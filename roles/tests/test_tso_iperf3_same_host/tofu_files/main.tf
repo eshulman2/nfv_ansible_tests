@@ -24,8 +24,8 @@ resource "openstack_compute_quotaset_v2" "quotaset_1" {
   ram                  = 512000
   cores                = 50
   instances            = 100
-  server_groups        = 4
-  server_group_members = 8
+  server_groups        = 500
+  server_group_members = 500
 }
 
 
@@ -48,13 +48,13 @@ dynamic_instances:
     group: test_tso_iperf3_server
     fip: ${openstack_networking_floatingip_v2.fips[0].address}
     vars:
-      dpdk_net: 'bla'
+      dpdk_net: ${openstack_networking_port_v2.dpdk_ports[1].mac_address}
   - name: server_1
     user: cloud-user
     group: test_tso_iperf3_client
     fip: ${openstack_networking_floatingip_v2.fips[1].address}
     vars:
-      dpdk_net: 'bla'
+      dpdk_net: ${openstack_networking_port_v2.dpdk_ports[1].mac_address}
 EOT
   private_key = openstack_compute_keypair_v2.test_keypair.private_key
 }
