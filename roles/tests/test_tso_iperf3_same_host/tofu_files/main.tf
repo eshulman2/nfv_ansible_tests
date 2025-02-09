@@ -33,15 +33,15 @@ resource "openstack_compute_keypair_v2" "test_keypair" {
   name = "test_keypair"
 }
 
-variable files_output_path {
-  description = "files_output_path"
-}
+# variable files_output_path {
+#   description = "files_output_path"
+# }
 
       # ${openstack_networking_port_v2.dpdk_ports[0][0].fixed_ip}
 locals {
    template = <<-EOT
 ---
-ssh_key: ${var.files_output_path}/generated_test_keypair.key
+ssh_key: /var/lib/ansible/generated_test_keypair.key
 dynamic_instances:
   - name: server_0
     user: cloud-user
@@ -61,7 +61,7 @@ EOT
 
 
 resource "local_file" "key_file" {
-  filename        = "./generated_test_keypair.key"
+  filename        = "/var/lib/ansible/generated_test_keypair.key"
   content         = local.private_key
   file_permission = "0600"
 }

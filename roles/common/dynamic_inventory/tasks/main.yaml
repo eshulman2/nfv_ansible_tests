@@ -6,18 +6,22 @@
 
 - name: Add hosts to dynamic inventory
   ansible.builtin.add_host:
-    name: "{{ item.name }}"
+    name: "{{ dynamic_instance.name }}"
     groups:
-      - "{{ item.group }}"
+      - "{{ dynamic_instance.group }}"
       - "{{ test_name }}"
     ansible_ssh_private_key_file: "{{ dynamic_testing_instances.ssh_key }}"
-    ansible_ssh_host: "{{ item.fip }}"
-    ansible_user: "{{ item.user }}"
+    ansible_ssh_host: "{{ dynamic_instance.fip }}"
+    ansible_user: "{{ dynamic_instance.user }}"
     # testing_vars: "{{ item.vars }}"
   loop: "{{ dynamic_testing_instances.dynamic_instances }}"
+  loop_control:
+    loop_var: dynamic_instance
 
 - name: Collect facts about the new hosts
   ansible.builtin.setup:
-  delegate_to: "{{ item }}"
+  delegate_to: "{{ setup_instances }}"
   delegate_facts: true
   loop: "{{ groups[test_name] }}"
+  loop_control:
+    loop_var: setup_instances
