@@ -5,7 +5,6 @@
 
 - name: Prepare ipref instances
   ansible.builtin.include_tasks: prepare_iperf.yaml
-  delegate_to: "{{ iperf_instances }}"
   loop: "{{ groups[test_name] }}"
   loop_control:
     loop_var: iperf_instances
@@ -16,7 +15,6 @@
 
 - name: Run iperf3 client
   ansible.builtin.include_tasks: clients.yaml
-  delegate_to: "{{ iperf_client }}"
   loop: "{{ groups[iperf3_clients_group] }}"
   loop_control:
     loop_var: iperf_client
@@ -27,7 +25,6 @@
 
 - name: Read and parse iperf results
   ansible.builtin.include_tasks: read_and_parse_results.yaml
-  delegate_to: "{{ iperf_client }}"
   loop: "{{ groups[iperf3_clients_group] }}"
   loop_control:
     loop_var: iperf_client

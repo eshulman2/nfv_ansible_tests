@@ -1,11 +1,13 @@
 ---
-- name: Install epel repo
-  ansible.builtin.dnf:
-    state: present
-    name:
-      - epel-release
+- delegate_to: "{{ iperf_instances }}"
+  block:
+  - name: Install epel repo
+    ansible.builtin.dnf:
+      state: present
+      name:
+        - epel-release
 
-- name: Install iperf3
-  ansible.builtin.dnf:
-    state: present
-    name: iperf3
+  - name: Install iperf3
+    ansible.builtin.dnf:
+      state: present
+      name: iperf3
