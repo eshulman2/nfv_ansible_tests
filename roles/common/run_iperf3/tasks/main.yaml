@@ -15,9 +15,6 @@
 
 - name: Run iperf3 client
   ansible.builtin.include_tasks: clients.yaml
-  vars:
-    dpdk_mac_address: "{{ hostvars[iperf3_srever].testing_vars.dpdk_net }}"
-    iperf3_server_ip: "{{ hostvars[iperf3_srever][server_nic]['ipv4']['address'] }}"
   loop: "{{ groups[iperf3_clients_group] }}"
   loop_control:
     loop_var: iperf_client

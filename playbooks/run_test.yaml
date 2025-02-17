@@ -2,12 +2,6 @@
   vars:
     results: {}
   tasks:
-  # - name: "Run test {{ test_name }}"
-  #   ansible.builtin.include_tasks: testing_tasks.yaml
-  #   loop: "{{ tests }}"
-  #   loop_control:
-  #     loop_var: test_name
-
   - name: "Run test {{ test_name }}"
     ansible.builtin.include_role:
       name: test_runner

@@ -1,10 +1,4 @@
 - block:
-    # - name: Reset failure reason
-    #   ansible.builtin.set_fact:
-    #     test_failure_reason: "Not set yet"
-    #     test_additional_info: "none"
-    #     tofu_dir: "../roles/tests/{{ test_name }}/tofu_files/"
-
     - name: Check for test tofu files
       ansible.builtin.stat:
         path: "{{ tofu_dir }}"
@@ -26,8 +20,6 @@
           cifmw_tofu_project_path: "{{ tofu_dir }}"
           cifmw_tofu_use_remote_project: true
           cifmw_tofu_hosts_pattern: 'undercloud-0'
-          # cifmw_tofu_plan_variables:
-          #   files_output_path: "{{ tofu_dir }}"
 
       - name: Dynamic inventory
         ansible.builtin.include_role:
@@ -63,6 +55,4 @@
         cifmw_tofu_project_path: "{{ tofu_dir }}"
         cifmw_tofu_use_remote_project: true
         cifmw_tofu_hosts_pattern: 'undercloud-0'
-        # cifmw_tofu_plan_variables:
-        #   files_output_path: "{{ tofu_dir }}"
       when: check_tofu_files.stat.exists
