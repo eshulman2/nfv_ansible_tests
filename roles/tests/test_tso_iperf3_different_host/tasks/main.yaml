@@ -25,6 +25,12 @@
     iperf_result_dict_name: 'no_tso_diff_hosts_results'
     server_nic: 'ansible_eth1'
 
+
+- name: Go Here
+  debug:
+    msg: "with tso: {{ tso_diff_hosts_results['server_1'].end.sum_received.bits_per_second }}\n without tso: {{ no_tso_diff_hosts_results['server_1'].end.sum_received.bits_per_second }}"
+
+
 - name: Set test additional info
   ansible.builtin.set_fact:
     test_additional_info: "with tso: {{ tso_diff_hosts_results['server_1'].end.sum_received.bits_per_second | human_readable }}\n without tso: {{ no_tso_diff_hosts_results['server_1'].end.sum_received.bits_per_second | human_readable }}"

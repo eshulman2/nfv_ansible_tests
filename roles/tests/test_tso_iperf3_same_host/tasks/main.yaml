@@ -31,7 +31,7 @@
 
 
 - name: Fail if results doesn't match expectations
-  when: tso_same_hosts_results['server_1'].end.sum_received.bits_per_second > no_tso_same_hosts_results['server_1'].end.sum_received.bits_per_second
+  when: tso_same_hosts_results['server_1'].end.sum_received.bits_per_second < no_tso_same_hosts_results['server_1'].end.sum_received.bits_per_second
   block:
   - name: Set failure reason
     ansible.builtin.set_fact:

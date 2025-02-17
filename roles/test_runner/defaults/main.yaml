@@ -1,0 +1,4 @@
+---
+test_failure_reason: "Not set yet"
+test_additional_info: "none"
+tofu_dir: "../roles/tests/{{ test_name }}/tofu_files/"
