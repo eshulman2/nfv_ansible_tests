@@ -1,2 +1,6 @@
 collections:
 - name: community.general
+roles:
+- name: junitxml
+  src: https://github.com/eshulman2/simple_junitxml
+  version: main

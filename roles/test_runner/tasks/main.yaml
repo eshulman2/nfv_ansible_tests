@@ -42,8 +42,8 @@
           {% filter from_yaml %}
           {{ test_name }}:
             status: failed
-            ansible_failed_task: {{ ansible_failed_task.action }}
             ansible_failed_result: {{ ansible_failed_result.msg }}
+            failure_type: {{ ansible_failed_task.action }}
             failure_reason: {{ test_failure_reason }}
           {% endfilter %}
 

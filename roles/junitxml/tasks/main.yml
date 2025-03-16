@@ -3,5 +3,5 @@
 - name: Template junitxml
   ansible.builtin.template:
     src: junitxml_template.j2
-    dest: /var/lib/AnsibleTests/external_files/results.yaml
+    dest: "{{ junitxml_output_path }}"
     mode: '0644'
