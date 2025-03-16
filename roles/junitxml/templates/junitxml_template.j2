@@ -1,0 +1,15 @@
+<testsuite name="{{ suite_name | default('') }}" tests="{{ tests | length }}" failures="{{ failures }}" errors="{{ errors }}" skipped="{{ skipped }}" time="{{ time | default('0') }}">
+    {% for test in tests %}
+    <testcase classname="{{ test.split('/')[0] }}" name="{{ test.split('/')[-1] }}" time="{{ test.time | default('0') }}">
+        {% if results.test.status == 'skipped' %}
+        <skipped>{{ results.test..skip_reason }}<skipped/>
+        {% endif %}
+        {% if results.test.status == 'failed' %}
+        <failure type="{{ results.test.ansible_failed_task }}">{{ results.test.failure_reason }}</failure>
+        {% endif %}
+        {% if results.test.status == 'error' %}
+        <error message="{{ results.test.error_reason }}">{{ test.error_details }}</error>
+        {% endif %}
+    </testcase>
+    {% endfor %}
+</testsuite>

@@ -36,6 +36,7 @@
   rescue:
     - set_fact:
         results: "{{ results | combine(failed_role) }}"
+        failures: "{{ failures + 1 }}"
       vars:
         failed_role: |
           {% filter from_yaml %}

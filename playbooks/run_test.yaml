@@ -1,6 +1,9 @@
 - hosts: "{{ testing_target | default('localhost') }}"
   vars:
     results: {}
+    failures: 0
+    errors: 0
+    skipped: 0
   tasks:
   - name: "Run test {{ test_name }}"
     ansible.builtin.include_role:
@@ -18,3 +21,8 @@
   - name: Print results
     ansible.builtin.debug:
       msg: "{{ results | to_nice_yaml }}"
+
+  - name: Generate junitxml file
+    ansible.builtin.include_role:
+      name: junitxml
+      public: true

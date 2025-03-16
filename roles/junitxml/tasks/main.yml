@@ -1,0 +1,7 @@
+---
+# tasks file for junitxml
+- name: Template junitxml
+  ansible.builtin.template:
+    src: junitxml_template.j2
+    dest: /var/lib/AnsibleTests/external_files/results.yaml
+    mode: '0644'
