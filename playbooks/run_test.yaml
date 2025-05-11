@@ -22,9 +22,9 @@
     ansible.builtin.debug:
       msg: "{{ results | to_nice_yaml }}"
 
-  - name: Generate junitxml file
-    vars:
-      junitxml_output_path: /var/lib/AnsibleTests/external_files/results.yaml
-    ansible.builtin.include_role:
-      name: junitxml
-      public: true
+  # - name: Generate junitxml file
+  #   vars:
+  #     junitxml_output_path: /var/lib/AnsibleTests/external_files/results.yaml
+  #   ansible.builtin.include_role:
+  #     name: junitxml
+  #     public: true
