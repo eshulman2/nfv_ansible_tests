@@ -6,7 +6,7 @@
   ansible.builtin.fail:
     msg: "Package {{ item }} is not installed"
   when: "'{{ item }}' not in ansible_facts.packages"
-  loop: "{{test_compute_validation_required_packages}}"
+  loop: "{{ test_compute_validation_required_packages }}"
   delegate_to: "{{ groups['computes'][0] }}"
 
 - name: Check if required services are running
