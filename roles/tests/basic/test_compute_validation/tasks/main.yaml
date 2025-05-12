@@ -1,0 +1,46 @@
+- name: Check if required packages are installed
+  ansible.builtin.package_facts:
+  delegate_to: "{{ groups['computes'][0] }}"
+
+- name: Validate required packages
+  ansible.builtin.fail:
+    msg: "Package {{ item }} is not installed"
+  when: "'{{ item }}' not in ansible_facts.packages"
+  loop: "{{test_compute_validation_required_packages}}"
+  delegate_to: "{{ groups['computes'][0] }}"
+
+- name: Check if required services are running
+  ansible.builtin.service_facts:
+  delegate_to: "{{ groups['computes'][0] }}"
+
+- name: Validate required services
+  ansible.builtin.fail:
+    msg: "Service {{ item }} is not running"
+  when: "ansible_facts.services[item].state != 'running'"
+  loop: "{{ test_compute_validation_required_services }}"
+  delegate_to: "{{ groups['computes'][0] }}"
+
+- name: Check OVS other_config
+  ansible.builtin.command: ovs-vsctl get Open_vSwitch . other_config
+  register: ovs_other_config
+  become: true
+  delegate_to: "{{ groups['computes'][0] }}"
+
+- name: Validate OVS other_config
+  ansible.builtin.fail:
+    msg: "Required OVS config {{ item }} is missing"
+  when: "'{{ item }}' not in ovs_other_config.stdout"
+  loop: "{{ test_compute_validation_ovs_other_config }}"
+  delegate_to: "{{ groups['computes'][0] }}"
+
+- name: Check kernel arguments
+  ansible.builtin.command: cat /proc/cmdline
+  register: kernel_args
+  delegate_to: "{{ groups['computes'][0] }}"
+
+- name: Validate kernel arguments
+  ansible.builtin.fail:
+    msg: "Kernel argument {{ item }} is missing"
+  when: "'{{ item }}' not in kernel_args.stdout"
+  loop: "{{ test_compute_validation_kernel_args }}"
+  delegate_to: "{{ groups['computes'][0] }}"
